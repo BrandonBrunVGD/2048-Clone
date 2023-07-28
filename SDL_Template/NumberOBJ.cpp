@@ -5,6 +5,8 @@ NumberOBJ::NumberOBJ(int num) {
 	mAudio = AudioManager::Instance();
 	mInput = InputManager::Instance();
 
+	
+
 	mNumValue = num;
 	mNumString = std::to_string(mNumValue);
 	mLastNum = mNumValue;
@@ -16,10 +18,10 @@ NumberOBJ::NumberOBJ(int num) {
 	mNumText->Position(Vec2_Zero);
 	mNumText->Scale(Vector2(4, 4));
 
-	mTestAnim = new AnimatedGLTexture("PlayerExplosion.png", 0, 0, 128, 128, 4, 1.0f, Animation::Layouts::Horizontal);
-	mTestAnim->Parent(mNumBox);
-	mTestAnim->Position(Vec2_Zero);
-	mTestAnim->SetWrapMode(Animation::WrapModes::Loop);
+	mShadow = new GLTexture("Shadow.png");
+	mShadow->Parent(this);
+	mShadow->Position(Vector2(0, 28));
+	mShadow->Scale(Vector2(0.05, 0.05));
 }
 
 NumberOBJ::~NumberOBJ() {
@@ -32,30 +34,31 @@ NumberOBJ::~NumberOBJ() {
 	delete mNumText;
 	mNumText = nullptr;
 
-	delete mTestAnim;
-	mTestAnim = nullptr;
+	delete mShadow;
+	mShadow = nullptr;
 }
 
 void NumberOBJ::Update() {
 	OnSpawn();
 	mNumBox->Update();
 	mNumText->Update();
-	mTestAnim->Update();
-	//mNumBox->Scale(Vector2(0.5, 0.5));
+	mShadow->Update();
 }
 
 void NumberOBJ::Render() {
+	mShadow->Render();
 	mNumBox->Render();
 	mNumText->Render();
-	//mTestAnim->Render();
 }
 
 void NumberOBJ::OnSpawn() {
-	if (mNumBox->Scale().x >= 0.5 && mNumBox->Scale().y >= 0.5) {
-		mNumBox->Scale(Vector2(0.5, 0.5));
+	if (mNumBox->Scale().x >= 0.4 && mNumBox->Scale().y >= 0.4) {
+		mNumBox->Scale(Vector2(0.4, 0.4));
+		mShadow->Scale(Vector2(0.4, 0.4));
 	} 
 	else {
 		mNumBox->Scale(Vector2(mNumBox->Scale().x + 0.05, mNumBox->Scale().y + 0.05));
+		mShadow->Scale(Vector2(mShadow->Scale().x + 0.05, mShadow->Scale().y + 0.05));
 	}
 }
 

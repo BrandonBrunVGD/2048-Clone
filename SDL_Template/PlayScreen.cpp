@@ -1,7 +1,7 @@
 #include "PlayScreen.h"
 #include <iomanip>
 #include <cstdlib>
-
+#include <fstream>
 
 
 PlayScreen::PlayScreen() {
@@ -9,17 +9,95 @@ PlayScreen::PlayScreen() {
 	mAudio = AudioManager::Instance();
 	mInput = InputManager::Instance();
 
+	mScoreText = new GLTexture("SCORE: ", "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mScoreText->Parent(this);
+	mScoreText->Position(Vector2(350, 100));
+	mScoreText->Scale(Vector2(1.5, 1.5));
+
+	mHighScoreText = new GLTexture("HIGH SCORE: ", "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mHighScoreText->Parent(this);
+	mHighScoreText->Position(Vector2(355, 170));
+	mHighScoreText->Scale(Vector2(1.5, 1.5));
+
+	std::fstream dataIn;
+	dataIn.open("SaveData.txt", std::ios::in);
+	if (dataIn.is_open()) {
+		std::getline(dataIn, mHighScore);
+		dataIn.close();
+	}
+
+	mHighScoreNum = new GLTexture(mHighScore, "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mHighScoreNum->Parent(this);
+	mHighScoreNum->Position(Vector2(355, 205));
+	mHighScoreNum->Scale(Vector2(1.5, 1.5));
+
+	mScoreBoard = new Scoreboard({255, 255, 255});
+	mScoreBoard->Position(Vector2(400, 135));
+	mScoreBoard->Score(0);
+	mScore = 0;
+
 	mCanMove = false;
 	mGameOver = false;
+	mGameWon = false;
+	mMuteSwitch = -1;
+	mMute = false;
+
+	mMuteIcon = new GLTexture("Mute.png");
+	mMuteIcon->Parent(this);
+	mMuteIcon->Position(Vector2(1700, 880));
+	mMuteIcon->Scale(Vector2(0.1, 0.1));
+
+	mSoundIcon = new GLTexture("UnMute.png");
+	mSoundIcon->Parent(this);
+	mSoundIcon->Position(Vector2(1700, 880));
+	mSoundIcon->Scale(Vector2(0.1, 0.1));
+
+	mBackground = new GLTexture("PlayScreenBackground.png");
+	mBackground->Parent(this);
+	mBackground->Position(Graphics::SCREEN_WIDTH * 0.5f, Graphics::SCREEN_HEIGHT * 0.5f);
+
+	mSand = new GLTexture("Sand.png");
+	mSand->Parent(this);
+	mSand->Position(Graphics::SCREEN_WIDTH * 0.5f, Graphics::SCREEN_HEIGHT * 0.45f);
 
 	InitSockets();
 	
 	RanNumSpawn();
+
+	Mix_MasterVolume(50);
+	Mix_VolumeMusic(30);
+	mAudio->PlayMusic("MUS/Happy-Days.mp3", -1);
+
 }
 
 PlayScreen::~PlayScreen() {
+
 	mTimer = nullptr;
 	mAudio = nullptr;
+
+	delete mScoreText;
+	mScoreText = nullptr;
+
+	delete mHighScoreText;
+	mHighScoreText = nullptr;
+
+	delete mHighScoreNum;
+	mHighScoreNum = nullptr;
+
+	delete mScoreBoard;
+	mScoreBoard = nullptr;
+
+	delete mBackground;
+	mBackground = nullptr;
+
+	delete mSand;
+	mSand = nullptr;
+
+	delete mMuteIcon;
+	mMuteIcon = nullptr;
+
+	delete mSoundIcon;
+	mSoundIcon = nullptr;
 
 	for (auto b : mNumbers) {
 		delete b;
@@ -31,12 +109,24 @@ PlayScreen::~PlayScreen() {
 }
 
 void PlayScreen::Update() {
+	mScoreText->Update();
+	mHighScoreText->Update();
+	mHighScoreNum->Update();
+	mScoreBoard->Update();
+	mBackground->Update();
+	mSand->Update();
+	mMuteIcon->Update();
+	mSoundIcon->Update();
+
 	displayBoard();
 
 	for (int i = 0; i < ROW_SIZE; ++i) {
 		for (int j = 0; j < ROW_SIZE; ++j) {
 			if (mNumbers[i][j] != nullptr) {
 				mNumbers[i][j]->Update();
+				if (mBoard[i][j] == 2048) {
+					mGameWon = true;
+				}
 			}
 
 		}
@@ -59,16 +149,19 @@ void PlayScreen::Update() {
 				mNumbers[j][i]->Position(mSockets[i][j]->Position());
 				mSockets[i][j]->SetFull(true);
 				std::cout << "SPAWNED NUMBER" << std::endl;
+				
 			}
 			else if (mNumbers[j][i] != nullptr) {
 				if (mBoard[j][i] != mNumbers[j][i]->GetLastNum()) {
 					delete mNumbers[j][i];
 					mNumbers[j][i] = nullptr;
+					
 					std::cout << "DELETED NUMBER - TO BE REPLACED" << std::endl;
 					mNumbers[j][i] = new NumberOBJ(mBoard[j][i]);
 					mNumbers[j][i]->Parent(this);
 					mNumbers[j][i]->Position(mSockets[i][j]->Position());
 					std::cout << "REPLACING NUMBER" << std::endl;
+					
 				}
 			}
 			if (mBoard[j][i] == 0 && mSockets[i][j]->GetFull() == true){
@@ -79,9 +172,26 @@ void PlayScreen::Update() {
 			}
 		}
 	}	
+	std::cout << mScore << std::endl;
+	if (mGameOver) { 
+			
+		std::cout << "GAME OVER!!!!" << std::endl; 
+	}	
+
+	int HSint = stoi(mHighScore);
+	if (HSint < mScore) {
+		std::ofstream dataOut;
+		dataOut.open("SaveData.txt", std::ios::out);
+		if (dataOut.is_open()) {
+			dataOut << mScore << " ";
+			dataOut.close();
+		}
+	}
 }
 
 void PlayScreen::Render() {
+	mBackground->Render();
+	mSand->Render();
 
 	for (int i = 0; i < ROW_SIZE; ++i) {
 		for (int j = 0; j < ROW_SIZE; ++j) {
@@ -97,6 +207,13 @@ void PlayScreen::Render() {
 			
 		}
 	}
+
+	if (mMute) { mMuteIcon->Render(); }
+	else { mSoundIcon->Render(); }
+	mHighScoreText->Render();
+	mHighScoreNum->Render();
+	mScoreText->Render();
+	mScoreBoard->Render();
 }
 
 void PlayScreen::InitSockets() {
@@ -104,22 +221,22 @@ void PlayScreen::InitSockets() {
 		for (int j = 0; j < ROW_SIZE; ++j) {
 			mSockets[i][j] = new Socket();
 			mSockets[i][j]->Parent(this);
-			mSockets[i][j]->Scale(Vector2(0.5f, 0.5f));
+			mSockets[i][j]->Scale(Vector2(0.57f, 0.57f));
 			mSockets[i][j]->SetSocketNum(i*j);
 		}
 	}
 	//Position Sockets
 	for (int i = 0; i < 4; ++i) {
-		mSockets[i][0]->Position(600.0f + (200 * (i % 4)), 200.0f);
+		mSockets[i][0]->Position(650.0f + (205 * (i % 4)), 200.0f);
 	}
 	for (int i = 0; i < 4; ++i) {
-		mSockets[i][1]->Position(600.0f + (200 * (i % 4)), 200.0f + (185 * 1));
+		mSockets[i][1]->Position(650.0f + (205 * (i % 4)), 200.0f + (185 * 1));
 	}
 	for (int i = 0; i < 4; ++i) {
-		mSockets[i][2]->Position(600.0f + (200 * (i % 4)), 200.0f + (185 * 2));
+		mSockets[i][2]->Position(650.0f + (205 * (i % 4)), 200.0f + (185 * 2));
 	}
 	for (int i = 0; i < 4; ++i) {
-		mSockets[i][3]->Position(600.0f + (200 * (i % 4)), 200.0f + (185 * 3));
+		mSockets[i][3]->Position(650.0f + (205 * (i % 4)), 200.0f + (185 * 3));
 	}
 }
 
@@ -137,11 +254,12 @@ void PlayScreen::RanNumSpawn() {
 
 	if (emptyNumbs.empty()) {
 		mGameOver = true;
-		return;
+		return;		
 	}
 
 	int randomPos = rand() % emptyNumbs.size();
 	mBoard[emptyNumbs[randomPos].first][emptyNumbs[randomPos].second] = 2;
+	mAudio->PlaySFX("SFX/Pop.wav");
 }
 
 void PlayScreen::Controls() {
@@ -160,6 +278,7 @@ void PlayScreen::Controls() {
 			}
 		}
 		RanNumSpawn();
+		AddScore(2);
 		
 	}
 	else if (mInput->KeyPressed(SDL_SCANCODE_W)) {
@@ -176,6 +295,8 @@ void PlayScreen::Controls() {
 			}
 		}
 		RanNumSpawn();
+		AddScore(2);
+		
 	}
 	else if (mInput->KeyPressed(SDL_SCANCODE_A)) {
 		for (int i = 0; i < ROW_SIZE; ++i) {
@@ -184,6 +305,8 @@ void PlayScreen::Controls() {
 			MoveLeft(mBoard[i]);
 		}
 		RanNumSpawn();
+		AddScore(2);
+		
 	}
 	else if (mInput->KeyPressed(SDL_SCANCODE_D)) {
 		for (int i = 0; i < ROW_SIZE; ++i) {
@@ -192,8 +315,23 @@ void PlayScreen::Controls() {
 			MoveRight(mBoard[i]);
 		}
 		RanNumSpawn();
+		AddScore(2);
+		
 	}
 	
+	if (mInput->KeyPressed(SDL_SCANCODE_M)) {
+		mMuteSwitch *= -1;
+	}
+	switch (mMuteSwitch) {
+	case 1:
+		mMute = true;
+		Mix_VolumeMusic(0);
+		break;
+	case -1:
+		mMute = false;
+		Mix_VolumeMusic(30);
+		break;
+	}
 }
 
 void PlayScreen::MoveNumbs(std::vector<int>& row) {
@@ -215,6 +353,7 @@ void PlayScreen::CombineNumbs(std::vector<int>& row) {
 		if (row[i] == row[i + 1]) {
 			row[i] *= 2;
 			row[i + 1] = 0;
+			AddScore(row[i]);
 		}
 	}
 }
@@ -259,4 +398,9 @@ void PlayScreen::MoveRight(std::vector<int>& row) {
 			}
 		}
 	}
+}
+
+void PlayScreen::AddScore(int points) {
+	mScore += points;
+	mScoreBoard->Score(mScore);
 }

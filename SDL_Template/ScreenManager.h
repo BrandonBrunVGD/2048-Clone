@@ -7,7 +7,7 @@ class ScreenManager {
 private:
 	static ScreenManager * sInstance;
 
-	enum Screens { Start, Play };
+	enum Screens { Start, Play, Won, Over };
 	Screens mCurrentScreen;
 
 	InputManager * mInput;

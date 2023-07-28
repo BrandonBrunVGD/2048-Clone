@@ -16,8 +16,7 @@ private:
 
 	Texture* mNumBox;
 	Texture* mNumText;
-
-	AnimatedGLTexture* mTestAnim;
+	Texture* mShadow;
 
 	int mSocketNum;
 	int mLastNum;

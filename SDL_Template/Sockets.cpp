@@ -9,7 +9,7 @@ Socket::Socket() {
 
 	mFull = false;
 
-	mSocket = new GLTexture("ProfileSelector.png");
+	mSocket = new GLTexture("PenFrame.png");
 	mSocket->Parent(this);
 	mSocket->Position(Vec2_Zero);
 	//mSocket->Scale(Vector2(0.5f, 0.5f));

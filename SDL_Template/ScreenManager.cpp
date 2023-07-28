@@ -1,4 +1,5 @@
- #include "ScreenManager.h"
+#include "ScreenManager.h"
+#include <fstream>
 
 ScreenManager * ScreenManager::sInstance = nullptr;
 
@@ -27,6 +28,18 @@ void ScreenManager::Update() {
 		break;
 	case Play:
 		mPlayScreen->Update();
+		if (mPlayScreen->GetGameOver() == true) {
+			mCurrentScreen = Over;
+		}
+		else if (mPlayScreen->GetGameWon() == true) {
+			mCurrentScreen = Won;
+		}
+		break;
+	case Won:
+
+		break;
+	case Over:
+
 		break;
 	}
 }
