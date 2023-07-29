@@ -28,7 +28,7 @@ namespace SDLFramework {
 
 		static const short SCREEN_WIDTH = 1920;
 		static const short SCREEN_HEIGHT = 1080;
-		const char* WINDOW_TITLE = "2048";
+		const char* WINDOW_TITLE = "2048 -Animals";
 
 	protected:
 		static Graphics* sInstance;

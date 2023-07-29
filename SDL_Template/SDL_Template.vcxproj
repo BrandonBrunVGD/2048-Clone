@@ -170,11 +170,11 @@ xcopy "$(ProjectDir)..\Data\*" "$(OutDir)Data\" /y /s</Command>
     <ClCompile Include="GLTexture.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LoseScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NumberOBJ.cpp" />
     <ClCompile Include="PhysEntity.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayScreen.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Scoreboard.cpp" />
@@ -201,12 +201,12 @@ xcopy "$(ProjectDir)..\Data\*" "$(OutDir)Data\" /y /s</Command>
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="BezierPath.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LoseScreen.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="NumberOBJ.h" />
     <ClInclude Include="PhysEntity.h" />
     <ClInclude Include="PhysicsHelper.h" />
     <ClInclude Include="PhysicsManager.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayScreen.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Scoreboard.h" />

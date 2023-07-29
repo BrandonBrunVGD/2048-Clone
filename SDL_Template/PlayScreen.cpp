@@ -2,7 +2,8 @@
 #include <iomanip>
 #include <cstdlib>
 #include <fstream>
-
+#include <thread>
+#include <chrono>
 
 PlayScreen::PlayScreen() {
 	mTimer = Timer::Instance();
@@ -99,13 +100,21 @@ PlayScreen::~PlayScreen() {
 	delete mSoundIcon;
 	mSoundIcon = nullptr;
 
-	for (auto b : mNumbers) {
-		delete b;
+	for (int i = 0; i < ROW_SIZE; ++i) {
+		for (int j = 0; j < ROW_SIZE; ++j) {
+			delete mNumbers[i][j];
+			mNumbers[i][j] = nullptr;
+		}
+	}	
+
+	for (int i = 0; i < ROW_SIZE; ++i) {
+		for (int j = 0; j < ROW_SIZE; ++j) {
+			delete mSockets[i][j];
+			mSockets[i][j] = nullptr;
+		}
 	}
 
-	for (auto b : mSockets) {
-		delete b;
-	}
+	mAudio->PauseMusic();
 }
 
 void PlayScreen::Update() {
@@ -118,7 +127,7 @@ void PlayScreen::Update() {
 	mMuteIcon->Update();
 	mSoundIcon->Update();
 
-	displayBoard();
+	//displayBoard();
 
 	for (int i = 0; i < ROW_SIZE; ++i) {
 		for (int j = 0; j < ROW_SIZE; ++j) {
@@ -148,7 +157,7 @@ void PlayScreen::Update() {
 				mNumbers[j][i]->Parent(this);
 				mNumbers[j][i]->Position(mSockets[i][j]->Position());
 				mSockets[i][j]->SetFull(true);
-				std::cout << "SPAWNED NUMBER" << std::endl;
+				//std::cout << "SPAWNED NUMBER" << std::endl;
 				
 			}
 			else if (mNumbers[j][i] != nullptr) {
@@ -156,11 +165,11 @@ void PlayScreen::Update() {
 					delete mNumbers[j][i];
 					mNumbers[j][i] = nullptr;
 					
-					std::cout << "DELETED NUMBER - TO BE REPLACED" << std::endl;
+					//std::cout << "DELETED NUMBER - TO BE REPLACED" << std::endl;
 					mNumbers[j][i] = new NumberOBJ(mBoard[j][i]);
 					mNumbers[j][i]->Parent(this);
 					mNumbers[j][i]->Position(mSockets[i][j]->Position());
-					std::cout << "REPLACING NUMBER" << std::endl;
+					//std::cout << "REPLACING NUMBER" << std::endl;
 					
 				}
 			}
@@ -168,14 +177,14 @@ void PlayScreen::Update() {
 				delete mNumbers[j][i];
 				mNumbers[j][i] = nullptr;
 				mSockets[i][j]->SetFull(false);
-				std::cout << "DELETED NUMBER" << std::endl;
+				//std::cout << "DELETED NUMBER" << std::endl;
 			}
 		}
 	}	
-	std::cout << mScore << std::endl;
+	//std::cout << mScore << std::endl;
 	if (mGameOver) { 
 			
-		std::cout << "GAME OVER!!!!" << std::endl; 
+		//std::cout << "GAME OVER!!!!" << std::endl; 
 	}	
 
 	int HSint = stoi(mHighScore);

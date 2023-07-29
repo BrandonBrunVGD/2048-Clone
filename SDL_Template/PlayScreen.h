@@ -62,6 +62,9 @@ public:
 	bool GetGameWon() { return mGameWon; }
 	bool GetGameOver() { return mGameOver; }
 
+	int GetScore() { return mScore; }
+	std::string GetHighScore() { return mHighScore; }
+
 	void Update() override;
 	void Render() override;
 };
