@@ -11,7 +11,6 @@
 #endif
 #include <iostream>
 #include <string>
-
 #include <glew.h>
 
 namespace SDLFramework {

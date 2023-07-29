@@ -13,7 +13,7 @@ NumberOBJ::NumberOBJ(int num) {
 
 	InitTexture();
 
-	mNumText = new GLTexture(mNumString, "gwibble/GWIBBLE_.ttf", 32, { 0, 128, 128 });
+	mNumText = new GLTexture(mNumString, "GWIBBLE_.ttf", 32, { 0, 128, 128 });
 	mNumText->Parent(mNumBox);
 	mNumText->Position(Vec2_Zero);
 	mNumText->Scale(Vector2(4, 4));

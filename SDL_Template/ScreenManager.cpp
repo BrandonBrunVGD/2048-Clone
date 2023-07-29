@@ -98,6 +98,7 @@ void ScreenManager::Render() {
 }
 
 ScreenManager::ScreenManager() {
+
 	mInput = InputManager::Instance();
 
 	mStartLock = false;

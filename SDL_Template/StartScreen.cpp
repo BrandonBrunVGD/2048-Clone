@@ -3,6 +3,7 @@
 StartScreen::StartScreen() {
 	mTimer = Timer::Instance();
 	mInput = InputManager::Instance();
+	mAudio = AudioManager::Instance();
 
 	mBackground = new GLTexture("StartScreenBackground.png");
 	mBackground->Parent(this);
@@ -14,6 +15,8 @@ StartScreen::StartScreen() {
 
 	mStartBlink = 1;
 	mBlinkTimer = 45;
+
+	mAudio->PlayMusic("MUS/Happy-Days.mp3", -1);
 }
 
 StartScreen::~StartScreen() {

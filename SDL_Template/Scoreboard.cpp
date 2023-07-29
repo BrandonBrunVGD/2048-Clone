@@ -18,7 +18,7 @@ void Scoreboard::Score(int score) {
 
 	if (score == 0) {
 		for (int i = 0; i < 1; i++) {
-			mScore.push_back(new GLTexture("0", "gwibble/GWIBBLE_.ttf", 32, mColor));
+			mScore.push_back(new GLTexture("0", "GWIBBLE_.ttf", 32, mColor));
 			mScore[i]->Parent(this);
 			mScore[i]->Position(Vector2(-32.0f * i, 0.0f));
 			mScore[i]->Scale(Vector2(1.5, 1.5));
@@ -29,7 +29,7 @@ void Scoreboard::Score(int score) {
 		unsigned lastIndex = (unsigned)str.length() - 1;
 
 		for (unsigned i = 0; i <= lastIndex; i++) {
-			mScore.push_back(new GLTexture(str.substr(i, 1), "gwibble/GWIBBLE_.ttf", 32, mColor));
+			mScore.push_back(new GLTexture(str.substr(i, 1), "GWIBBLE_.ttf", 32, mColor));
 			mScore[i]->Parent(this);
 			mScore[i]->Position(Vector2(-32.0f * (lastIndex - i), 0.0f));
 			mScore[i]->Scale(Vector2(1.5, 1.5));

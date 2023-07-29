@@ -10,12 +10,12 @@ PlayScreen::PlayScreen() {
 	mAudio = AudioManager::Instance();
 	mInput = InputManager::Instance();
 
-	mScoreText = new GLTexture("SCORE: ", "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mScoreText = new GLTexture("SCORE: ", "GWIBBLE_.ttf", 32, { 255, 255, 255 });
 	mScoreText->Parent(this);
 	mScoreText->Position(Vector2(350, 100));
 	mScoreText->Scale(Vector2(1.5, 1.5));
 
-	mHighScoreText = new GLTexture("HIGH SCORE: ", "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mHighScoreText = new GLTexture("HIGH SCORE: ", "GWIBBLE_.ttf", 32, { 255, 255, 255 });
 	mHighScoreText->Parent(this);
 	mHighScoreText->Position(Vector2(355, 170));
 	mHighScoreText->Scale(Vector2(1.5, 1.5));
@@ -27,7 +27,7 @@ PlayScreen::PlayScreen() {
 		dataIn.close();
 	}
 
-	mHighScoreNum = new GLTexture(mHighScore, "gwibble/GWIBBLE_.ttf", 32, { 255, 255, 255 });
+	mHighScoreNum = new GLTexture(mHighScore, "GWIBBLE_.ttf", 32, { 255, 255, 255 });
 	mHighScoreNum->Parent(this);
 	mHighScoreNum->Position(Vector2(355, 205));
 	mHighScoreNum->Scale(Vector2(1.5, 1.5));
